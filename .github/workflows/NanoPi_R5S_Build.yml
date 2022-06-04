@@ -1,0 +1,104 @@
+name: NanoPi-R2S RK3328 OpenWrt 19.07 Build
+
+on:
+  push:
+    paths:
+      - 'CHANGELOG.md'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          ref: master
+
+      - name: Initialize Environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk
+          sudo docker image prune -a -f
+          sudo apt-get -y install upx-ucl unzip
+          sudo apt-get -y purge dotnet* ghc* google* llvm* mysql* php* zulu* firefox hhvm
+          sudo apt-get -y autoremove --purge
+          wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
+
+      #- name: Setup Debug Session
+      #  uses: P3TERX/debugger-action@master
+
+      - name: Install Repo
+        run: |
+          git clone https://github.com/friendlyarm/repo
+          sudo cp repo/repo /usr/bin/
+
+      - name: Download Source
+        run: |
+          rm -rf code
+          mkdir code
+          cd code
+          repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master-v22.03 -m rk3568.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
+          repo sync -c --no-clone-bundle -j8
+
+
+      - name: Install Extra Packages
+        run: |
+          cd code/friendlywrt/package
+          git clone https://github.com/kiddin9/openwrt-packages
+
+      - name: Update Target.mk
+        run: |
+          cd code/friendlywrt/include
+          sed -i 's/dnsmasq /dnsmasq-full default-settings luci /' target.mk
+
+      - name: Update Feeds
+        run: |
+          cd code/friendlywrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Install Mods
+        run: |
+          cd code
+
+      - name: Patch Kernel
+        run: |
+          cd code/kernel/
+
+      - name: Custom Configure Files
+        run: |
+          cd code
+
+      - name: Set Default Values
+        run: |
+          cd code/friendlywrt
+
+      - name: Build OpenWrt
+        run: |
+          cd code
+          ./build.sh nanopi_r5s.mk
+
+      - name: Fix Rootfs Owner and Group
+        run: |
+          sudo df -lh
+
+      - name: Assemble Artifact
+        run: |
+          rm -rf ./artifact/
+          mkdir -p ./artifact/
+
+          find code/out/ -name "FriendlyWrt_*img*" | xargs -I{} sh -c 'f=$(basename $1); zip -r -j "./artifact/${f}.zip" $1' sh {} \;
+
+          cp code/friendlywrt/.config ./artifact/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: FriendlyWrt_NanoPi-R5S rk3568 v22.03
+          path: ./artifact/
