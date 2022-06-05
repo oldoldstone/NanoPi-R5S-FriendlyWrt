@@ -50,7 +50,7 @@ jobs:
       - name: Install Extra Packages
         run: |
           cd code/friendlywrt/package
-          git clone https://github.com/kiddin9/openwrt-packages
+          #git clone https://github.com/kiddin9/openwrt-packages
 
       - name: Update Target.mk
         run: |
