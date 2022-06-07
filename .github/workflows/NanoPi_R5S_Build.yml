@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'CHANGELOG.md'
+      - 'NanoPi_R5S_Build.yml'
 
 jobs:
 
@@ -73,8 +74,8 @@ jobs:
 
       - name: Custom Configure Files
         run: |
-          rm -rf ./R5s/friendlywrt/rockchip/*
-          cp -r ./config/* ./R5s/friendlywrt/rockchip/
+          rm -rf ./R5s/configs/*
+          cp -r ./config/* ./R5s/configs/
 
       - name: Set Default Values
         run: |
