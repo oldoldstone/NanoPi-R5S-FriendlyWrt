@@ -40,48 +40,49 @@ jobs:
 
       - name: Download Source
         run: |
-          rm -rf code
-          mkdir code
-          cd code
+          rm -rf R5s
+          mkdir R5s
+          cd R5s
           repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master-v22.03 -m rk3568.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
           repo sync -c --no-clone-bundle -j8
 
 
       - name: Install Extra Packages
         run: |
-          cd code/friendlywrt/package
-          #git clone https://github.com/kiddin9/openwrt-packages
+          cd R5s/friendlywrt/package
+          git clone https://github.com/kiddin9/openwrt-packages
 
       - name: Update Target.mk
         run: |
-          cd code/friendlywrt/include
+          cd R5s/friendlywrt/include
           sed -i 's/dnsmasq /dnsmasq-full default-settings luci /' target.mk
 
       - name: Update Feeds
         run: |
-          cd code/friendlywrt
+          cd R5s/friendlywrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Install Mods
         run: |
-          cd code
+          cd R5s
 
-      - name: Patch Kernel
+      - name: Patch
         run: |
-          cd code/kernel/
+          cp ./patches/9*.patch ./R5s/friendlywrt/target/linux/generic/hack-5.10/
 
       - name: Custom Configure Files
         run: |
-          cd code
+          rm -rf ./R5s/friendlywrt/rockchip/*
+          cp -r ./config/* ./R5s/friendlywrt/rockchip/
 
       - name: Set Default Values
         run: |
-          cd code/friendlywrt
+          cd R5s/friendlywrt
 
       - name: Build OpenWrt
         run: |
-          cd code
+          cd R5s
           ./build.sh nanopi_r5s.mk
 
       - name: Fix Rootfs Owner and Group
@@ -93,9 +94,9 @@ jobs:
           rm -rf ./artifact/
           mkdir -p ./artifact/
 
-          find code/out/ -name "FriendlyWrt_*img*" | xargs -I{} sh -c 'f=$(basename $1); zip -r -j "./artifact/${f}.zip" $1' sh {} \;
+          find R5s/out/ -name "FriendlyWrt_*img*" | xargs -I{} sh -c 'f=$(basename $1); zip -r -j "./artifact/${f}.zip" $1' sh {} \;
 
-          cp code/friendlywrt/.config ./artifact/
+          cp R5s/friendlywrt/.config ./artifact/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
