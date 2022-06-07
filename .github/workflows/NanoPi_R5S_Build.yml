@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'CHANGELOG.md'
-      - '.github/NanoPi_R5S_Build.yml'
+      - '.github/workflows/NanoPi_R5S_Build.yml'
 
 jobs:
 
