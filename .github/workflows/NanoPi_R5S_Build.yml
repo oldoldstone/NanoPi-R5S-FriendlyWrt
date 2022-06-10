@@ -60,35 +60,33 @@ jobs:
           pushd helloworld
           git checkout b4ede27bc2665208b7c5b2901abab55ea780d7b3
           popd
-          popd 
+          popd
           cp -r openwrt-packages/{dns2socks,microsocks,ipt2socks,redsocks2} friendlywrt/package/custom/helloworld
           cp -r openwrt-packages/{luci-app-passwall,brook,chinadns-ng,hysteria,pdnsd-alt,trojan-plus} friendlywrt/package/custom/passwall
-          
+
       - name: Update Target.mk
         run: |
           cd R5s
 
       - name: Update Feeds
         run: |
-          cd R5s 
+          cd R5s
 
       - name: Install Mods
         run: |
-          cd R5s            
+          cd R5s
 
       - name: Patch
         run: |
           cd R5s
-          
 
-      - name: Custom Configure Files
-        run:
+      - name: Custom config files
+        run: |
           cd R5s
           cp  ../config/10-plugins ./configs/rockchip/10-plugins
-          cp  ../config/10-plugins ./configs/rockchip-docker/10-plugins          
+          cp  ../config/10-plugins ./configs/rockchip-docker/10-plugins
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZ=768/' configs/rockchip/01-nanopi
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZ=768/' configs/rockchip-docker/01-nanopi
-          
 
       - name: Set Default Values
         run: |
