@@ -50,32 +50,45 @@ jobs:
 
       - name: Install Extra Packages
         run: |
-          cd R5s/friendlywrt/package
-          git clone https://github.com/kiddin9/openwrt-packages
-
+          cd R5s
+          git clone --depth=1 https://github.com/kiddin9/openwrt-packages
+          mkdir friendlywrt/package/custom
+          pushd friendlywrt/package/custom
+          mkdir passwall
+          svn export https://github.com/coolsnowwolf/lede/trunk/package/lean/autocore ./autocore
+          git clone https://github.com/fw876/helloworld.git
+          pushd helloworld
+          git checkout b4ede27bc2665208b7c5b2901abab55ea780d7b3
+          popd
+          popd 
+          cp -r openwrt-packages/{dns2socks,microsocks,ipt2socks,redsocks2} friendlywrt/package/custom/helloworld
+          cp -r openwrt-packages/{luci-app-passwall,brook,chinadns-ng,hysteria,pdnsd-alt,trojan-plus} friendlywrt/package/custom/passwall
+          
       - name: Update Target.mk
-        run: |
-          cd R5s/friendlywrt/include
-          sed -i 's/dnsmasq /dnsmasq-full default-settings luci /' target.mk
-
-      - name: Update Feeds
-        run: |
-          cd R5s/friendlywrt
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-
-      - name: Install Mods
         run: |
           cd R5s
 
+      - name: Update Feeds
+        run: |
+          cd R5s 
+
+      - name: Install Mods
+        run: |
+          cd R5s            
+
       - name: Patch
         run: |
-          cp ./patches/9*.patch ./R5s/friendlywrt/target/linux/generic/hack-5.10/
+          cd R5s
+          
 
       - name: Custom Configure Files
-        run: |
-          rm -rf ./R5s/configs/*
-          cp -r ./config/* ./R5s/configs/
+        run:
+          cp  ./config/10-plugins ./R5s/configs/rockchip
+          cp  ./config/10-plugins ./R5s/configs/rockchip-docker
+          cd R5s
+          sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZ=768/' configs/rockchip/01-nanopi
+          sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZ=768/' configs/rockchip-docker/01-nanopi
+          
 
       - name: Set Default Values
         run: |
@@ -84,7 +97,7 @@ jobs:
       - name: Build OpenWrt
         run: |
           cd R5s
-          ./build.sh nanopi_r5s.mk
+          ./build.sh rk3568_docker.mk
 
       - name: Fix Rootfs Owner and Group
         run: |
