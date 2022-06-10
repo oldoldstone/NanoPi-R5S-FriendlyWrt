@@ -83,9 +83,9 @@ jobs:
 
       - name: Custom Configure Files
         run:
-          cp  ./config/10-plugins ./R5s/configs/rockchip
-          cp  ./config/10-plugins ./R5s/configs/rockchip-docker
           cd R5s
+          cp  ../config/10-plugins ./configs/rockchip/10-plugins
+          cp  ../config/10-plugins ./configs/rockchip-docker/10-plugins          
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZ=768/' configs/rockchip/01-nanopi
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZ=768/' configs/rockchip-docker/01-nanopi
           
