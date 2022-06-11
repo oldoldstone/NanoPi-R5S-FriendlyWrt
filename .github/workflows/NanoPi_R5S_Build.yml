@@ -72,9 +72,8 @@ jobs:
 
       - name: Update Feeds
         run: |
-          cd R5s/friendlywrt/
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
+          cd R5s
+
       - name: Install Mods
         run: |
           cd R5s
@@ -86,10 +85,12 @@ jobs:
       - name: Custom config files
         run: |
           cd R5s
-          cp  ../config/10-plugins ./configs/rockchip/10-plugins
-          cp  ../config/10-plugins ./configs/rockchip-docker/10-plugins
-          sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' configs/rockchip/01-nanopi
-          sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' configs/rockchip-docker/01-nanopi
+          cp ../config/10-plugins ./configs/rockchip/10-plugins
+          cp ../config/10-plugins ./configs/rockchip-docker/10-plugins
+          cp ../img/uboot.img ./u-boot/
+          sed -i '/function build_all.*$/{n;s/build_uboot//;}'  ./scripts/build.sh
+          sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' ./configs/rockchip/01-nanopi
+          sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' ./configs/rockchip-docker/01-nanopi
 
       - name: Set Default Values
         run: |
@@ -98,7 +99,7 @@ jobs:
       - name: Build OpenWrt
         run: |
           cd R5s
-          ./build.sh rk3568_docker.mk
+          ./build.sh nanopi_r5s.mk
 
       - name: Fix Rootfs Owner and Group
         run: |
@@ -108,9 +109,7 @@ jobs:
         run: |
           rm -rf ./artifact/
           mkdir -p ./artifact/
-
           find R5s/out/ -name "FriendlyWrt_*img*" | xargs -I{} sh -c 'f=$(basename $1); zip -r -j "./artifact/${f}.zip" $1' sh {} \;
-
           cp R5s/friendlywrt/.config ./artifact/
 
       - name: Upload Artifact
@@ -118,3 +117,16 @@ jobs:
         with:
           name: FriendlyWrt_NanoPi-R5S rk3568 v22.03
           path: ./artifact/
+
+      - name: Create release
+        id: create_release
+        uses: ncipollo/release-action@main
+        with:
+          name: OpenWRT-R5s-sd-img
+          allowUpdates: true
+          prerelease: true
+          tag: ${{ env.latest_release }}
+          commit: 22.03
+          replacesArtifacts: true
+          token: ${{ secrets.ACCESS_TOKEN }}
+          artifacts: ./artifact/*.zip
