@@ -109,7 +109,7 @@ jobs:
         run: |
           cd R5s
           echo -e "$(nproc) thread compile"
-          ./build.sh nanopi_r5s.mk
+          ./build.sh rk3568_docker.mk
 
       - name: Fix Rootfs Owner and Group
         run: |
