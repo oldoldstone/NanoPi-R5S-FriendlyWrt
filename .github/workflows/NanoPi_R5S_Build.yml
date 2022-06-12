@@ -100,7 +100,7 @@ jobs:
         run: |
           cd R5s
           MK_LINK=".current_config.mk"
-          ln -s ./device/friendlyelec/rk3568/nanopi_r5s.mk MK_LINK
+          ln -s ./device/friendlyelec/rk3568/nanopi_r5s.mk ${MK_LINK}
           source ${MK_LINK}
           ./build.sh kernel
 
