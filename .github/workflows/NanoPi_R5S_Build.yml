@@ -88,7 +88,7 @@ jobs:
           cp ../config/10-plugins ./configs/rockchip/10-plugins
           cp ../config/10-plugins ./configs/rockchip-docker/10-plugins
           cp ../img/uboot.img ./u-boot/
-          sed -i '/function build_all.*$/{n;s/build_uboot//;}'  ./scripts/build.sh
+          sed -i '/function build_all.*$/{n;s/build_uboot//;n;s/build_kernel//;}'  ./scripts/build.sh
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' ./configs/rockchip/01-nanopi
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' ./configs/rockchip-docker/01-nanopi
 
@@ -96,9 +96,15 @@ jobs:
         run: |
           cd R5s/friendlywrt
 
+      - name: Build Kernel
+        run: |
+          cd R5s
+          ./build.sh kernel
+
       - name: Build OpenWrt
         run: |
           cd R5s
+          echo -e "$(nproc) thread compile"
           ./build.sh nanopi_r5s.mk
 
       - name: Fix Rootfs Owner and Group
