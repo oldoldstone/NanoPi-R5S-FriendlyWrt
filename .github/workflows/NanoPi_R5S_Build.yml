@@ -99,6 +99,7 @@ jobs:
       - name: Build Kernel
         run: |
           cd R5s
+          source ./device/friendlyelec/rk3568/nanopi_r5s.mk
           ./build.sh kernel
 
       - name: Build OpenWrt
