@@ -62,10 +62,9 @@ jobs:
           popd
           popd
           cp -r openwrt-packages/{dns2socks,microsocks,ipt2socks,redsocks2} friendlywrt/package/custom/helloworld
-          cp -r openwrt-packages/{luci-app-passwall,brook,chinadns-ng,hysteria,pdnsd-alt,trojan-plus} friendlywrt/package/custom/passwall
-          cp -r openwrt-packages/{adguardhome,luci-app-adguardhome} friendlywrt/package/custom
+          cp -r openwrt-packages/{luci-app-passwall,brook,chinadns-ng,hysteria,pdnsd-alt,trojan-plus,v2ray-geodata} friendlywrt/package/custom/passwall
+          cp -r openwrt-packages/{luci-app-adguardhome,luci-app-nfs,luci-app-serverchan} friendlywrt/package/custom
           cp -r openwrt-packages/{luci-theme-argon,luci-app-argon-config} friendlywrt/package/custom
-          cp -r openwrt-packages/{luci-app-frps,luci-app-frpc,luci-app-nfs} friendlywrt/package/custom
       - name: Update Target.mk
         run: |
           cd R5s
@@ -85,6 +84,8 @@ jobs:
       - name: Custom config files
         run: |
           cd R5s
+          rm ./configs/rockchip/02-luci_lang
+          rm ./configs/rockchip-docker/02-luci_lang
           cp ../config/10-plugins ./configs/rockchip/10-plugins
           cp ../config/10-plugins ./configs/rockchip-docker/10-plugins
           cp ../img/uboot.img ./u-boot/
@@ -135,7 +136,7 @@ jobs:
           name: OpenWRT-R5s-sd-img
           allowUpdates: true
           prerelease: true
-          tag: ${{ env.latest_release }}
+          tag: ${{ 22.03 }}
           commit: 22.03
           replacesArtifacts: true
           token: ${{ secrets.ACCESS_TOKEN }}
