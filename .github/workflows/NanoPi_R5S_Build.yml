@@ -71,7 +71,9 @@ jobs:
 
       - name: Update Feeds
         run: |
-          cd R5s
+          cd R5s/friendlywrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
 
       - name: Install Mods
         run: |
@@ -89,11 +91,12 @@ jobs:
           cp ../config/10-plugins ./configs/rockchip/10-plugins
           cp ../config/10-plugins ./configs/rockchip-docker/10-plugins
           cp ../img/uboot.img ./u-boot/
-          sed -i '/function build_all.*$/{n;s/build_uboot//;n;s/build_kernel//;}'  ./scripts/build.sh
           sed -i 's/CONFIG_PACKAGE_qosify=m/# CONFIG_PACKAGE_qosify is not set/' configs/rockchip-docker/01-nanopi
           sed -i 's/make -j$(nproc)/make -j1 V=s/'  ./scripts/mk-friendlywrt.sh
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' ./configs/rockchip/01-nanopi
           sed -i 's/ROOTFS_PARTSIZE.*$/ROOTFS_PARTSIZE=768/' ./configs/rockchip-docker/01-nanopi
+          sed -i '/function build_all.*$/{n;s/build_uboot//;n;s/build_kernel//;}'  ./scripts/build.sh
+          sed -i 's/set -eu/set -u/' ./scripts/mk-friendlywrt.sh
 
       - name: Set Default Values
         run: |
