@@ -18,9 +18,11 @@
 
 我虽然用的是archlinux，友善的编译脚本是基于ubutu的，对archlinux很不友好，懒的装ubuntu虚拟机测试，就想在 [soffchen/NanoPi-R2S](https://github.com/soffchen/NanoPi-R2S)的基础上编译，缺省固件可以生成，但加入其它插件后无法一直编译卡死超时（6小时），无法生成固件，可能需要在ubuntu上试一下。
 
-最后我还是在archlinux上进行编译，编译流程见yml文件，但编译出来的固件uboot有问题，无法启动，见此[issue](https://github.com/friendlyarm/friendlywrt_scripts/issues/1)，很有可能是archlinux上编译工具版本更高的原因。
+最后我还是在archlinux上进行编译，编译流程见yml文件，但编译出来的固件无法启动，需要替换uboot，见此[issue](https://github.com/friendlyarm/friendlywrt_scripts/issues/1)，很有可能是archlinux上编译工具版本更高的原因。
 
 release里是一个编译好的sd卡docker版固件，基于[友善官方](https://github.com/friendlyarm/friendlywrt) friendWrt编译，仅仅添加了上网插件，无任何优化，仅精简了多国语言包，openwrt官方软件可以使用软件管理opkg装，其他可以在[kiddin9大佬](https://op.supes.top/packages/)的自建仓库找。
+
+这只是临时的解决办法，坐等各位大佬适配R5s。 
 
 ## 感谢
 
